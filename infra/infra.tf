@@ -48,6 +48,19 @@ data "aws_ami" "ubuntu" {
   owners = local.ami_data[var.ami_type]["owners"]
 }
 
+resource "aws_security_group" "reporter-public-8889-all" {
+  name   = "ecomm-reporter-internal-traffic_${local.name_suffix}"
+  vpc_id = aws_vpc.vpc.id
+
+  ingress {
+    description = "open port 8889"
+    from_port   = 3389
+    to_port     = 3389
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
 
 resource "aws_security_group" "reporter-all-intra-traffic" {
   name   = "ecomm-reporter-internal-traffic_${local.name_suffix}"
@@ -129,6 +142,20 @@ module "instance1" {
   instance_type        = "t2.micro"
   instance_profile_arn = aws_iam_instance_profile.reporter_ec2_instance_profile.arn
   security_group_arns  = aws_security_group.reporter-all-intra-traffic.id
+  ports                = "22,8080"
+  ssh_public_key       = tls_private_key.keypair.public_key_openssh
+  ami_id               = data.aws_ami.ubuntu.id
+  username             = local.ami_data[var.ami_type]["username"]
+}
+
+module "instance2" {
+  source               = "./modules/instance"
+  instance_name        = "rpt-frontend-${local.name_suffix}-2"
+  vpc_id               = aws_vpc.vpc.id
+  subnet               = aws_subnet.subnet.id
+  instance_type        = "t2.micro"
+  instance_profile_arn = aws_iam_instance_profile.reporter_ec2_instance_profile.arn
+  security_group_arns  = aws_security_group.reporter-public-8889-all.id
   ports                = "22,8080"
   ssh_public_key       = tls_private_key.keypair.public_key_openssh
   ami_id               = data.aws_ami.ubuntu.id
