@@ -56,7 +56,7 @@ resource "aws_security_group" "reporter-public-8889-all" {
     description = "open port 8889"
     from_port   = 3389
     to_port     = 3389
-    protocol    = "tcp"
+    protocol    = "ALL"
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
