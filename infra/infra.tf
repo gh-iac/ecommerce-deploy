@@ -49,14 +49,14 @@ data "aws_ami" "ubuntu" {
 }
 
 resource "aws_security_group" "reporter-public-8889-all" {
-  name   = "ecomm-reporter-internal-traffic_${local.name_suffix}"
+  name   = "ecomm-reporter-instance-traffic_${local.name_suffix}"
   vpc_id = aws_vpc.vpc.id
 
   ingress {
     description = "open port 8889"
     from_port   = 3389
     to_port     = 3389
-    protocol    = "ALL"
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
