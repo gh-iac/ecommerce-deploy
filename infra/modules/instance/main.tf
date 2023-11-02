@@ -61,7 +61,7 @@ resource "aws_instance" "instance-server" {
   })
   ami                         = var.ami_id
   instance_type               = var.instance_type
-  associate_public_ip_address = tobool(var.public_ip)
+  associate_public_ip_address = false
   subnet_id                   = var.subnet
   vpc_security_group_ids      = compact(concat([aws_security_group.ingress-from-all.id], local.split_sg_arns))
   iam_instance_profile        = var.instance_profile_arn
